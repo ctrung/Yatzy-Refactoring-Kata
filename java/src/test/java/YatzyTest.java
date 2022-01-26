@@ -1,7 +1,9 @@
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * TUs de la classe @{@link Yatzy} pour vérifier le calcul des scores.
@@ -9,6 +11,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class YatzyTest {
 
     private static final String PARAM_TEST_NAME = "{0}, {1}, {2}, {3}, {4} => {5}";
+
+    @ParameterizedTest(name = "{0}, {1}, {2}, {3}, {4} => error")
+    @CsvSource({
+        "0, 1, 2, 3, 4",
+        "-1, 1, 2, 3, 4",
+        "1, 2, 3, 4, 7",
+    })
+    void invalid_dices_are_rejected(int dice1, int dice2, int dice3, int dice4, int dice5) {
+        assertThrows(IllegalArgumentException.class, () -> new Yatzy(dice1, dice2, dice3, dice4, dice5));
+    }
 
     @ParameterizedTest(name = PARAM_TEST_NAME)
     @CsvSource({
@@ -158,6 +170,8 @@ class YatzyTest {
     @ParameterizedTest(name = PARAM_TEST_NAME)
     @CsvSource({
         "2, 3, 4, 5, 6, 0",
+        "1, 2, 2, 2, 6, 0",
+        "1, 2, 2, 3, 6, 0",
         "6, 2, 2, 2, 6, 18",
     })
     void full_house_scores_the_sum_of_a_pair_and_three_of_a_kind(int dice1, int dice2, int dice3, int dice4, int dice5, int score) {

@@ -1,3 +1,10 @@
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.stream;
+
 /**
  * Implémentation du jeu du <a href="https://fr.wikipedia.org/wiki/Yahtzee">Yatzy</a>.
  * <br/><br/>
@@ -5,7 +12,15 @@
  */
 public class Yatzy {
 
-    protected int[] dice;
+    private static final int NO_POINTS = 0;
+    private static final int YATZY_POINTS = 50;
+    private static final int SMALL_STRAIGHT_POINTS = 15;
+    private static final int LARGE_STRAIGHT_POINTS = 20;
+
+    /**
+     * Etat des dés.
+     */
+    private final int[] dice;
 
     /**
      * Initialisation de l'état des 5 dés.
@@ -17,6 +32,7 @@ public class Yatzy {
      * @param d5 dé 5.
      */
     public Yatzy(int d1, int d2, int d3, int d4, int d5) {
+        validateDice(d1, d2, d3, d4, d5);
         dice = new int[5];
         dice[0] = d1;
         dice[1] = d2;
@@ -31,7 +47,7 @@ public class Yatzy {
      * @return la somme des valeurs des dés.
      */
     public int chance() {
-        return dice[0] + dice[1] + dice[2] + dice[3] + dice[4];
+        return stream(dice).sum();
     }
 
     /**
@@ -40,13 +56,7 @@ public class Yatzy {
      * @return 0 ou 50 points selon qu'il y ait 5 dés de même valeur.
      */
     public int yatzy() {
-        int[] counts = new int[6];
-        for (int die : dice)
-            counts[die - 1]++;
-        for (int i = 0; i != 6; i++)
-            if (counts[i] == 5)
-                return 50;
-        return 0;
+        return stream(dice).distinct().count() == 1 ? YATZY_POINTS : NO_POINTS;
     }
 
     /**
@@ -56,15 +66,7 @@ public class Yatzy {
      * @return Un score entre 0 et 5 en fonction du nombre de dés avec la face 1.
      */
     public int ones() {
-        int sum = 0;
-        if (dice[0] == 1) sum++;
-        if (dice[1] == 1) sum++;
-        if (dice[2] == 1) sum++;
-        if (dice[3] == 1) sum++;
-        if (dice[4] == 1)
-            sum++;
-
-        return sum;
+        return countAndMultiply(1);
     }
 
     /**
@@ -74,13 +76,7 @@ public class Yatzy {
      * @return Un score entre 0 et 10 en fonction du nombre de dés avec la face 2.
      */
     public int twos() {
-        int sum = 0;
-        if (dice[0] == 2) sum += 2;
-        if (dice[1] == 2) sum += 2;
-        if (dice[2] == 2) sum += 2;
-        if (dice[3] == 2) sum += 2;
-        if (dice[4] == 2) sum += 2;
-        return sum;
+        return countAndMultiply(2);
     }
 
     /**
@@ -90,14 +86,7 @@ public class Yatzy {
      * @return Un score entre 0 et 15 en fonction du nombre de dés avec la face 3.
      */
     public int threes() {
-        int s;
-        s = 0;
-        if (dice[0] == 3) s += 3;
-        if (dice[1] == 3) s += 3;
-        if (dice[2] == 3) s += 3;
-        if (dice[3] == 3) s += 3;
-        if (dice[4] == 3) s += 3;
-        return s;
+        return countAndMultiply(3);
     }
 
     /**
@@ -107,14 +96,7 @@ public class Yatzy {
      * @return Un score entre 0 et 20 en fonction du nombre de dés avec la face 4.
      */
     public int fours() {
-        int sum;
-        sum = 0;
-        for (int at = 0; at != 5; at++) {
-            if (dice[at] == 4) {
-                sum += 4;
-            }
-        }
-        return sum;
+        return countAndMultiply(4);
     }
 
     /**
@@ -124,12 +106,7 @@ public class Yatzy {
      * @return Un score entre 0 et 25 en fonction du nombre de dés avec la face 5.
      */
     public int fives() {
-        int s = 0;
-        int i;
-        for (i = 0; i < dice.length; i++)
-            if (dice[i] == 5)
-                s = s + 5;
-        return s;
+        return countAndMultiply(5);
     }
 
     /**
@@ -139,11 +116,7 @@ public class Yatzy {
      * @return Un score entre 0 et 30 en fonction du nombre de dés avec la face 6.
      */
     public int sixes() {
-        int sum = 0;
-        for (int at = 0; at < dice.length; at++)
-            if (dice[at] == 6)
-                sum = sum + 6;
-        return sum;
+        return countAndMultiply(6);
     }
 
     /**
@@ -153,17 +126,14 @@ public class Yatzy {
      * @return La valeur de la plus grande paire si présente, 0 sinon.
      */
     public int onePair() {
-        int[] counts = new int[6];
-        counts[dice[0] - 1]++;
-        counts[dice[1] - 1]++;
-        counts[dice[2] - 1]++;
-        counts[dice[3] - 1]++;
-        counts[dice[4] - 1]++;
-        int at;
-        for (at = 0; at != 6; at++)
-            if (counts[6 - at - 1] >= 2)
-                return (6 - at) * 2;
-        return 0;
+        Map<Integer, Long> counts = countByValue();
+        // NB : parcours en ordre décroissant pour trouver la plus grande paire possible
+        for (int i = 6; i > 0; i--) {
+            if (hasAtLeastTwo(counts, i)) {
+                return i * 2;
+            }
+        }
+        return NO_POINTS;
     }
 
     /**
@@ -173,23 +143,17 @@ public class Yatzy {
      * @return La valeur des deux paires cumulées si présentes, 0 sinon.
      */
     public int twoPairs() {
-        int[] counts = new int[6];
-        counts[dice[0] - 1]++;
-        counts[dice[1] - 1]++;
-        counts[dice[2] - 1]++;
-        counts[dice[3] - 1]++;
-        counts[dice[4] - 1]++;
+        Map<Integer, Long> counts = countByValue();
         int n = 0;
         int score = 0;
-        for (int i = 0; i < 6; i += 1)
-            if (counts[6 - i - 1] >= 2) {
+        for (Map.Entry<Integer, Long> e : counts.entrySet()) {
+            int value = e.getKey();
+            if (hasAtLeastTwo(counts, value)) {
                 n++;
-                score += (6 - i);
+                score += value;
             }
-        if (n == 2)
-            return score * 2;
-        else
-            return 0;
+        }
+        return n == 2 ? score * 2 : NO_POINTS;
     }
 
     /**
@@ -198,17 +162,14 @@ public class Yatzy {
      * @return 4 fois la valeur des dés identiques en présence d'un carré, 0 sinon.
      */
     public int fourOfAKind() {
-        int[] tallies;
-        tallies = new int[6];
-        tallies[dice[0] - 1]++;
-        tallies[dice[1] - 1]++;
-        tallies[dice[2] - 1]++;
-        tallies[dice[3] - 1]++;
-        tallies[dice[4] - 1]++;
-        for (int i = 0; i < 6; i++)
-            if (tallies[i] >= 4)
-                return (i + 1) * 4;
-        return 0;
+        Map<Integer, Long> counts = countByValue();
+        for (Map.Entry<Integer, Long> e : counts.entrySet()) {
+            int value = e.getKey();
+            if (hasAtLeastFour(counts, value)) {
+                return value * 4;
+            }
+        }
+        return NO_POINTS;
     }
 
     /**
@@ -217,17 +178,14 @@ public class Yatzy {
      * @return 3 fois la valeur des dés identiques en présence d'un brelan, 0 sinon.
      */
     public int threeOfAKind() {
-        int[] t;
-        t = new int[6];
-        t[dice[0] - 1]++;
-        t[dice[1] - 1]++;
-        t[dice[2] - 1]++;
-        t[dice[3] - 1]++;
-        t[dice[4] - 1]++;
-        for (int i = 0; i < 6; i++)
-            if (t[i] >= 3)
-                return (i + 1) * 3;
-        return 0;
+        Map<Integer, Long> counts = countByValue();
+        for (Map.Entry<Integer, Long> e : counts.entrySet()) {
+            int value = e.getKey();
+            if (hasAtLeastThree(counts, value)) {
+                return value * 3;
+            }
+        }
+        return NO_POINTS;
     }
 
     /**
@@ -236,20 +194,12 @@ public class Yatzy {
      * @return 15 points si présence d'une petite suite, 0 sinon.
      */
     public int smallStraight() {
-        int[] tallies;
-        tallies = new int[6];
-        tallies[dice[0] - 1] += 1;
-        tallies[dice[1] - 1] += 1;
-        tallies[dice[2] - 1] += 1;
-        tallies[dice[3] - 1] += 1;
-        tallies[dice[4] - 1] += 1;
-        if (tallies[0] == 1 &&
-            tallies[1] == 1 &&
-            tallies[2] == 1 &&
-            tallies[3] == 1 &&
-            tallies[4] == 1)
-            return 15;
-        return 0;
+        Map<Integer, Long> counts = countByValue();
+        return hasAtLeastOne(counts, 1) &&
+            hasAtLeastOne(counts, 2) &&
+            hasAtLeastOne(counts, 3) &&
+            hasAtLeastOne(counts, 4) &&
+            hasAtLeastOne(counts, 5) ? SMALL_STRAIGHT_POINTS : NO_POINTS;
     }
 
     /**
@@ -258,20 +208,12 @@ public class Yatzy {
      * @return 20 points si présence d'une grance suite, 0 sinon.
      */
     public int largeStraight() {
-        int[] tallies;
-        tallies = new int[6];
-        tallies[dice[0] - 1] += 1;
-        tallies[dice[1] - 1] += 1;
-        tallies[dice[2] - 1] += 1;
-        tallies[dice[3] - 1] += 1;
-        tallies[dice[4] - 1] += 1;
-        if (tallies[1] == 1 &&
-            tallies[2] == 1 &&
-            tallies[3] == 1 &&
-            tallies[4] == 1
-            && tallies[5] == 1)
-            return 20;
-        return 0;
+        Map<Integer, Long> counts = countByValue();
+        return hasAtLeastOne(counts, 2) &&
+            hasAtLeastOne(counts, 3) &&
+            hasAtLeastOne(counts, 4) &&
+            hasAtLeastOne(counts, 5) &&
+            hasAtLeastOne(counts, 6) ? LARGE_STRAIGHT_POINTS : NO_POINTS;
     }
 
     /**
@@ -281,37 +223,110 @@ public class Yatzy {
      * @return La somme des valeurs de tous les dés si présence d'un full house, 0 sinon.
      */
     public int fullHouse() {
-        int[] tallies;
-        boolean _2 = false;
-        int i;
-        int _2_at = 0;
-        boolean _3 = false;
-        int _3_at = 0;
-
-
-        tallies = new int[6];
-        tallies[dice[0] - 1] += 1;
-        tallies[dice[1] - 1] += 1;
-        tallies[dice[2] - 1] += 1;
-        tallies[dice[3] - 1] += 1;
-        tallies[dice[4] - 1] += 1;
-
-        for (i = 0; i != 6; i += 1)
-            if (tallies[i] == 2) {
-                _2 = true;
-                _2_at = i + 1;
+        Map<Integer, Long> counts = countByValue();
+        int three = 0;
+        int pair = 0;
+        for (Map.Entry<Integer, Long> e : counts.entrySet()) {
+            int value = e.getKey();
+            if (hasAtLeastThree(counts, value)) {
+                three = value;
+                continue;
             }
-
-        for (i = 0; i != 6; i += 1)
-            if (tallies[i] == 3) {
-                _3 = true;
-                _3_at = i + 1;
+            if (hasAtLeastTwo(counts, value)) {
+                pair = value;
             }
+        }
+        return pair > 0 && three > 0 ? pair * 2  + three * 3 : NO_POINTS;
+    }
 
-        if (_2 && _3)
-            return _2_at * 2 + _3_at * 3;
-        else
-            return 0;
+    /*
+     * -------------------
+     * Interne/utilitaire
+     * -------------------
+     */
+
+    /**
+     * Valide que tous les dés sont entre 1..6.
+     * @param dices valeurs des dés.
+     */
+    private void validateDice(int... dices) {
+        if (stream(dices).filter(d -> d < 1 || d > 6).count() > 0) {
+            throw new IllegalArgumentException(Arrays.toString(dices)
+                + " contient au moins un dé qui n'est pas dans l'intervalle 1..6");
+        }
+    }
+
+    /**
+     * Mulitplie le nombre d'occurences de {@code value} dans {@code dice} par {@code value}.
+     * @param value valeur recherchée
+     * @return Le nombre d'occurences de {@code value} dans {@code dice} par {@code value}.
+     */
+    private int countAndMultiply(int value) {
+        return (int) stream(dice).filter(i -> i == value).count() * value;
+    }
+
+    /**
+     * Utilitaire pour calculer les occurences des valeurs des dés.
+     * @return Map&lt;Valeur dé, Décompte&gt;
+     */
+    private Map<Integer, Long> countByValue() {
+        return stream(dice)
+            .boxed()
+            .collect(Collectors.groupingBy(
+                Function.identity(),
+                Collectors.counting())
+            );
+    }
+
+    /**
+     * @param counts map des décomptes
+     * @param value valeur recherchée
+     * @return {@code true} si il y a <b>au moins un dé {@code value}</b>
+     * d'après la map des décomptes {@code counts}
+     */
+    private boolean hasAtLeastOne(Map<Integer, Long> counts, int value) {
+        return hasAtLeast(counts, value, 1);
+    }
+
+
+    /**
+     * @param counts map des décomptes
+     * @param value valeur recherchée
+     * @return {@code true} si il y a <b>au moins deux dés {@code value}</b>
+     * d'après la map des décomptes {@code counts}
+     */
+    private boolean hasAtLeastTwo(Map<Integer, Long> counts, int value) {
+        return hasAtLeast(counts, value, 2);
+    }
+
+    /**
+     * @param counts map des décomptes
+     * @param value valeur recherchée
+     * @return {@code true} si il y a <b>au moins trois dés {@code value}</b>
+     * d'après la map des décomptes {@code counts}
+     */
+    private boolean hasAtLeastThree(Map<Integer, Long> counts, int value) {
+        return hasAtLeast(counts, value, 3);
+    }
+
+    /**
+     * @param counts map des décomptes
+     * @param value valeur recherchée
+     * @return {@code true} si il y a <b>au moins quatre dés {@code value}</b>
+     * d'après la map des décomptes {@code counts}
+     */
+    private boolean hasAtLeastFour(Map<Integer, Long> counts, int value) {
+        return hasAtLeast(counts, value, 4);
+    }
+
+    /**
+     * @param counts map des décomptes
+     * @param value valeur recherchée
+     * @return {@code true} si il y a <b>au moins un nombre {@code count} de dés {@code value}</b>
+     * d'après la map des décomptes {@code counts}
+     */
+    private boolean hasAtLeast(Map<Integer, Long> counts, int value, int count) {
+        return counts.getOrDefault(value, 0L) >= count;
     }
 }
 
