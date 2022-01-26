@@ -1,5 +1,19 @@
+/**
+ * Implémentation du jeu du <a href="https://fr.wikipedia.org/wiki/Yahtzee">Yatzy</a>.
+ * <br/><br/>
+ * Cette classe contient des méthodes de calcul de points des combinaisons du jeu.
+ */
 public class Yatzy {
 
+    /**
+     * Les joueurs doivent obtenir le plus grand nombre de points / ils marquent la somme de la valeur des dés.
+     * @param d1 dé 1.
+     * @param d2 dé 2.
+     * @param d3 dé 3.
+     * @param d4 dé 4.
+     * @param d5 dé 5.
+     * @return la somme des valeurs des dés.
+     */
     public static int chance(int d1, int d2, int d3, int d4, int d5)
     {
         int total = 0;
@@ -11,6 +25,11 @@ public class Yatzy {
         return total;
     }
 
+    /**
+     * Les joueurs doivent obtenir 5 dés de même valeur / ils marquent 50 points.
+     * @param dice les (5) dés.
+     * @return 0 ou 50 points selon qu'il y ait 5 dés de même valeur.
+     */
     public static int yatzy(int... dice)
     {
         int[] counts = new int[6];
@@ -22,6 +41,16 @@ public class Yatzy {
         return 0;
     }
 
+    /**
+     * Partie de 1 : les joueurs doivent obtenir le plus grand nombre de dés avec la face 1 /
+     * ils marquent 1 fois le nombre de dés de valeur 1.
+     * @param d1 dé 1.
+     * @param d2 dé 2.
+     * @param d3 dé 3.
+     * @param d4 dé 4.
+     * @param d5 dé 5.
+     * @return Un score entre 0 et 5 en fonction du nombre de dés avec la face 1.
+     */
     public static int ones(int d1, int d2, int d3, int d4, int d5) {
         int sum = 0;
         if (d1 == 1) sum++;
@@ -34,6 +63,16 @@ public class Yatzy {
         return sum;
     }
 
+    /**
+     * Partie de 2 : les joueurs doivent obtenir le plus grand nombre de dés avec la face 2 /
+     * ils marquent 2 fois le nombre de dés de valeur 2.
+     * @param d1 dé 1.
+     * @param d2 dé 2.
+     * @param d3 dé 3.
+     * @param d4 dé 4.
+     * @param d5 dé 5.
+     * @return Un score entre 0 et 10 en fonction du nombre de dés avec la face 2.
+     */
     public static int twos(int d1, int d2, int d3, int d4, int d5) {
         int sum = 0;
         if (d1 == 2) sum += 2;
@@ -44,6 +83,16 @@ public class Yatzy {
         return sum;
     }
 
+    /**
+     * Partie de 3 : les joueurs doivent obtenir le plus grand nombre de dés avec la face 3 /
+     * ils marquent 3 fois le nombre de dés de valeur 3.
+     * @param d1 dé 1.
+     * @param d2 dé 2.
+     * @param d3 dé 3.
+     * @param d4 dé 4.
+     * @param d5 dé 5.
+     * @return Un score entre 0 et 15 en fonction du nombre de dés avec la face 3.
+     */
     public static int threes(int d1, int d2, int d3, int d4, int d5) {
         int s;    
         s = 0;
@@ -56,16 +105,30 @@ public class Yatzy {
     }
 
     protected int[] dice;
-    public Yatzy(int d1, int d2, int d3, int d4, int _5)
+
+    /**
+     * Initialisation de l'état des 5 dés.
+     * @param d1 dé 1.
+     * @param d2 dé 2.
+     * @param d3 dé 3.
+     * @param d4 dé 4.
+     * @param d5 dé 5.
+     */
+    public Yatzy(int d1, int d2, int d3, int d4, int d5)
     {
         dice = new int[5];
         dice[0] = d1;
         dice[1] = d2;
         dice[2] = d3;
         dice[3] = d4;
-        dice[4] = _5;
+        dice[4] = d5;
     }
 
+    /**
+     * Partie de 4 : les joueurs doivent obtenir le plus grand nombre de dés avec la face 4 /
+     * ils marquent 4 fois le nombre de dés de valeur 4.
+     * @return Un score entre 0 et 20 en fonction du nombre de dés avec la face 4.
+     */
     public int fours()
     {
         int sum;    
@@ -78,6 +141,11 @@ public class Yatzy {
         return sum;
     }
 
+    /**
+     * Partie de 5 : les joueurs doivent obtenir le plus grand nombre de dés avec la face 5 /
+     * ils marquent 5 fois le nombre de dés de valeur 5.
+     * @return Un score entre 0 et 25 en fonction du nombre de dés avec la face 5.
+     */
     public int fives()
     {
         int s = 0;
@@ -88,6 +156,11 @@ public class Yatzy {
         return s;
     }
 
+    /**
+     * Partie de 6 : les joueurs doivent obtenir le plus grand nombre de dés avec la face 6 /
+     * ils marquent 6 fois le nombre de dés de valeur 6.
+     * @return Un score entre 0 et 30 en fonction du nombre de dés avec la face 6.
+     */
     public int sixes()
     {
         int sum = 0;
@@ -97,6 +170,16 @@ public class Yatzy {
         return sum;
     }
 
+    /**
+     * Partie de paires : les joueurs doivent obtenir la plus grande paire /
+     * ils marquent la valeur de la plus grande paire (ex. paire de 6 = 12, paire de 5 = 10, etc...)
+     * @param d1 dé 1.
+     * @param d2 dé 2.
+     * @param d3 dé 3.
+     * @param d4 dé 4.
+     * @param d5 dé 5.
+     * @return La valeur de la plus grande paire si présente, 0 sinon.
+     */
     public static int score_pair(int d1, int d2, int d3, int d4, int d5)
     {
         int[] counts = new int[6];
@@ -112,6 +195,16 @@ public class Yatzy {
         return 0;
     }
 
+    /**
+     * Partie de doubles paires : les joueurs doivent obtenir deux paires /
+     * ils marquent la valeur des deux paires (ex. paire de 3 et 5 = 16, etc...)
+     * @param d1 dé 1.
+     * @param d2 dé 2.
+     * @param d3 dé 3.
+     * @param d4 dé 4.
+     * @param d5 dé 5.
+     * @return La valeur des deux paires cumulées si présentes, 0 sinon.
+     */
     public static int two_pair(int d1, int d2, int d3, int d4, int d5)
     {
         int[] counts = new int[6];
@@ -133,12 +226,21 @@ public class Yatzy {
             return 0;
     }
 
-    public static int four_of_a_kind(int _1, int _2, int d3, int d4, int d5)
+    /**
+     * Carré : les joueurs doivent obtenir 4 dés de même valeur / ils marquent 4 fois la valeur des dés identiques.
+     * @param d1 dé 1.
+     * @param d2 dé 2.
+     * @param d3 dé 3.
+     * @param d4 dé 4.
+     * @param d5 dé 5.
+     * @return 4 fois la valeur des dés identiques en présence d'un carré, 0 sinon.
+     */
+    public static int four_of_a_kind(int d1, int d2, int d3, int d4, int d5)
     {
         int[] tallies;
         tallies = new int[6];
-        tallies[_1-1]++;
-        tallies[_2-1]++;
+        tallies[d1-1]++;
+        tallies[d2-1]++;
         tallies[d3-1]++;
         tallies[d4-1]++;
         tallies[d5-1]++;
@@ -148,6 +250,15 @@ public class Yatzy {
         return 0;
     }
 
+    /**
+     * Brelan : les joueurs doivent obtenir 3 dés de même valeur / ils marquent 3 fois la valeur des dés identiques.
+     * @param d1 dé 1.
+     * @param d2 dé 2.
+     * @param d3 dé 3.
+     * @param d4 dé 4.
+     * @param d5 dé 5.
+     * @return 3 fois la valeur des dés identiques en présence d'un brelan, 0 sinon.
+     */
     public static int three_of_a_kind(int d1, int d2, int d3, int d4, int d5)
     {
         int[] t;
@@ -163,6 +274,15 @@ public class Yatzy {
         return 0;
     }
 
+    /**
+     * Petite suite : les joueurs doivent obtenir 5 dés qui se suivent jusqu'à 5 (1-2-3-4-5) / ils marquent 15 points.
+     * @param d1 dé 1.
+     * @param d2 dé 2.
+     * @param d3 dé 3.
+     * @param d4 dé 4.
+     * @param d5 dé 5.
+     * @return 15 points si présence d'une petite suite, 0 sinon.
+     */
     public static int smallStraight(int d1, int d2, int d3, int d4, int d5)
     {
         int[] tallies;
@@ -181,6 +301,15 @@ public class Yatzy {
         return 0;
     }
 
+    /**
+     * Grande suite : les joueurs doivent obtenir 5 dés qui se suivent jusqu'à 6 (2-3-4-5-6) / ils marquent 20 points.
+     * @param d1 dé 1.
+     * @param d2 dé 2.
+     * @param d3 dé 3.
+     * @param d4 dé 4.
+     * @param d5 dé 5.
+     * @return 20 points si présence d'une grance suite, 0 sinon.
+     */
     public static int largeStraight(int d1, int d2, int d3, int d4, int d5)
     {
         int[] tallies;
@@ -199,6 +328,16 @@ public class Yatzy {
         return 0;
     }
 
+    /**
+     * Les joueurs doivent obtenir 3 dés de même valeur et 2 dés de même valeur – (brelan + paire) /
+     * ils marquent la somme des valeurs des dés.
+     * @param d1 dé 1.
+     * @param d2 dé 2.
+     * @param d3 dé 3.
+     * @param d4 dé 4.
+     * @param d5 dé 5.
+     * @return La somme des valeurs de tous les dés si présence d'un full house, 0 sinon.
+     */
     public static int fullHouse(int d1, int d2, int d3, int d4, int d5)
     {
         int[] tallies;
