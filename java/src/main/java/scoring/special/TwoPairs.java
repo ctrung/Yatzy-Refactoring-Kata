@@ -3,7 +3,9 @@ package scoring.special;
 import api.Type;
 import scoring.Scoring;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Calcule le score de deux paires.
@@ -20,16 +22,11 @@ public class TwoPairs extends Scoring {
      */
     @Override
     protected int computeScore(int[] dices) {
-        Map<Integer, Long> counts = countByValue(dices);
-        int n = 0;
-        int score = 0;
-        for (Map.Entry<Integer, Long> e : counts.entrySet()) {
-            int value = e.getKey();
-            if (hasAtLeastTwo(counts, value)) {
-                n++;
-                score += value;
-            }
-        }
-        return n == 2 ? score * 2 : NO_POINTS;
+        List<Map.Entry<Integer, Long>> found = countByValue(dices).entrySet().stream()
+            .filter(valueAtLeast(2))
+            .collect(Collectors.toList());
+
+        return found.size() == 2 ?
+            (found.get(0).getKey() + found.get(1).getKey()) * 2 : POINTS_IF_NOT_FOUND;
     }
 }

@@ -27,6 +27,6 @@ public class SmallStraight extends Scoring {
             hasAtLeastOne(counts, 2) &&
             hasAtLeastOne(counts, 3) &&
             hasAtLeastOne(counts, 4) &&
-            hasAtLeastOne(counts, 5) ? POINTS : NO_POINTS;
+            hasAtLeastOne(counts, 5) ? POINTS : POINTS_IF_NOT_FOUND;
     }
 }

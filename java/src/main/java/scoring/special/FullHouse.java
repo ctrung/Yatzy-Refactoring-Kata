@@ -3,7 +3,9 @@ package scoring.special;
 import api.Type;
 import scoring.Scoring;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Calcule le score d'un full house.
@@ -20,19 +22,13 @@ public class FullHouse extends Scoring {
      */
     @Override
     public int computeScore(int[] dice) {
-        Map<Integer, Long> counts = countByValue(dice);
-        int three = 0;
-        int pair = 0;
-        for (Map.Entry<Integer, Long> e : counts.entrySet()) {
-            int value = e.getKey();
-            if (hasAtLeastThree(counts, value)) {
-                three = value;
-                continue;
-            }
-            if (hasAtLeastTwo(counts, value)) {
-                pair = value;
-            }
-        }
-        return pair > 0 && three > 0 ? pair * 2  + three * 3 : NO_POINTS;
+        List<Map.Entry<Integer, Long>> found = countByValue(dice).entrySet().stream()
+            .filter(valueAtLeast(2))
+            .sorted(Map.Entry.comparingByValue()) // order by count asc
+            .collect(Collectors.toList());
+
+        boolean fullHouseFound = found.size() == 2 && found.get(1).getValue() == 3;
+        return fullHouseFound ?
+            found.get(0).getKey() * 2 + found.get(1).getKey() * 3 : POINTS_IF_NOT_FOUND;
     }
 }

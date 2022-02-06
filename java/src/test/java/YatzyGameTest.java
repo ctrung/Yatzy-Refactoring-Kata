@@ -246,6 +246,7 @@ class YatzyGameTest {
         "1, 2, 2, 2, 6, 0",
         "1, 2, 2, 3, 6, 0",
         "6, 2, 2, 2, 6, 18",
+        "6, 2, 2, 1, 6, 0",
     })
     void full_house_scores_the_sum_of_a_pair_and_three_of_a_kind(int dice1, int dice2, int dice3, int dice4, int dice5, int score) {
         assertEquals(score, yatzyGame.score(FULL_HOUSE, dice1, dice2, dice3, dice4, dice5));

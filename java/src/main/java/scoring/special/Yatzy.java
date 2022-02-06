@@ -22,6 +22,6 @@ public class Yatzy extends Scoring {
      */
     @Override
     protected int computeScore(int[] dices) {
-        return stream(dices).distinct().count() == 1 ? POINTS : NO_POINTS;
+        return stream(dices).distinct().count() == 1 ? POINTS : POINTS_IF_NOT_FOUND;
     }
 }

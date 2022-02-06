@@ -27,6 +27,6 @@ public class LargeStraight extends Scoring {
             hasAtLeastOne(counts, 3) &&
             hasAtLeastOne(counts, 4) &&
             hasAtLeastOne(counts, 5) &&
-            hasAtLeastOne(counts, 6) ? POINTS : NO_POINTS;
+            hasAtLeastOne(counts, 6) ? POINTS : POINTS_IF_NOT_FOUND;
     }
 }

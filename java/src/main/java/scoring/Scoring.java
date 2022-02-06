@@ -5,6 +5,7 @@ import api.Type;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
@@ -14,10 +15,20 @@ import static java.util.stream.Collectors.groupingBy;
  */
 public abstract class Scoring {
 
+    /**
+     * Valeur min d'un dé
+     */
     protected static final int DICE_MIN = 1;
+
+    /**
+     * Valeur max d'un dé
+     */
     protected static final int DICE_MAX = 6;
 
-    protected static final int NO_POINTS = 0;
+    /**
+     * Nombre de points quand la combinaison n'est pas trouvée
+     */
+    protected static final int POINTS_IF_NOT_FOUND = 0;
 
     /*
      * ------
@@ -37,7 +48,7 @@ public abstract class Scoring {
      * @param d3 dé 3.
      * @param d4 dé 4.
      * @param d5 dé 5.
-     * @return le score de la combinaison en fontion de {@code dice}.
+     * @return le score en fontion des dés.
      */
     public int compute(int d1, int d2, int d3, int d4, int d5) {
 
@@ -73,7 +84,7 @@ public abstract class Scoring {
     }
 
     /**
-     * Utilitaire pour calculer les occurences des valeurs des dés.
+     * Utilitaire pour calculer le décompte des dés.
      *
      * @return Map&lt;Valeur dé, Décompte&gt;
      */
@@ -84,59 +95,55 @@ public abstract class Scoring {
     }
 
     /**
-     * @param counts map des décomptes
-     * @param value  valeur recherchée
-     * @return {@code true} si il y a <b>au moins un dé {@code value}</b>
-     * d'après la map des décomptes {@code counts}
+     * Génère en interne le décompte décroissant des dés (Map&lt;Valeur dé, Décompte&gt;),
+     * puis filtre et enfin mappe pour obtenir le score d'une combinaison
+     * d'au moins N dés identiques.
+     *
+     * @param dices           les dés
+     * @param filterPredicate fonction de filtrage des {@link java.util.Map.Entry}
+     *                        des décomptes
+     * @param mapper          fonction de mapping des {@link java.util.Map.Entry}
+     *                        des décomptes
+     * @return le score de N dés identiques
+     * @see #valueAtLeast(int)
+     * @see #keyTimes(int)
      */
-    protected boolean hasAtLeastOne(Map<Integer, Long> counts, int value) {
-        return hasAtLeast(counts, value, 1);
-    }
+    protected Integer numberOfAkindScore(int[] dices,
+                                         Predicate<Map.Entry<Integer, Long>> filterPredicate,
+                                         Function<Map.Entry<Integer, Long>, Integer> mapper) {
 
-
-    /**
-     * @param counts map des décomptes
-     * @param value  valeur recherchée
-     * @return {@code true} si il y a <b>au moins deux dés {@code value}</b>
-     * d'après la map des décomptes {@code counts}
-     */
-    protected boolean hasAtLeastTwo(Map<Integer, Long> counts, int value) {
-        return hasAtLeast(counts, value, 2);
-    }
-
-    /**
-     * @param counts map des décomptes
-     * @param value  valeur recherchée
-     * @return {@code true} si il y a <b>au moins trois dés {@code value}</b>
-     * d'après la map des décomptes {@code counts}
-     */
-    protected boolean hasAtLeastThree(Map<Integer, Long> counts, int value) {
-        return hasAtLeast(counts, value, 3);
+        return countByValue(dices).entrySet().stream()
+            .filter(filterPredicate)
+            .max(Map.Entry.comparingByKey()) // plus grand dé
+            .map(mapper)
+            .orElse(POINTS_IF_NOT_FOUND);
     }
 
     /**
-     * @param counts map des décomptes
-     * @param value  valeur recherchée
-     * @return {@code true} si il y a <b>au moins quatre dés {@code value}</b>
-     * d'après la map des décomptes {@code counts}
+     * @param threshold le seuil min
+     * @return fonction de filtrage des {@link java.util.Map.Entry} des décomptes
+     * @see #numberOfAkindScore(int[], Predicate, Function)
      */
-    protected boolean hasAtLeastFour(Map<Integer, Long> counts, int value) {
-        return hasAtLeast(counts, value, 4);
+    protected Predicate<Map.Entry<Integer, Long>> valueAtLeast(int threshold) {
+        return e -> e.getValue() >= threshold;
     }
 
-    /*
-     * -------
-     * Interne
-     * -------
+    /**
+     * @param factor le coefficient
+     * @return fonction de mapping des {@link java.util.Map.Entry} des décomptes
+     * @see #numberOfAkindScore(int[], Predicate, Function)
      */
+    protected Function<Map.Entry<Integer, Long>, Integer> keyTimes(int factor) {
+        return e -> e.getKey() * factor;
+    }
 
     /**
-     * @param counts map des décomptes
-     * @param value  valeur recherchée
-     * @return {@code true} si il y a <b>au moins un nombre {@code count} de dés {@code value}</b>
-     * d'après la map des décomptes {@code counts}
+     * @param counts le décompte des dés (Map&lt;Valeur dé, Décompte&gt;)
+     * @param dice  dé recherché
+     * @return {@code true} si le dé recherché apparait au moins une fois dans
+     * {@code counts}
      */
-    private boolean hasAtLeast(Map<Integer, Long> counts, int value, int count) {
-        return counts.getOrDefault(value, 0L) >= count;
+    protected boolean hasAtLeastOne(Map<Integer, Long> counts, int dice) {
+        return counts.get(dice) != null;
     }
 }

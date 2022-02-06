@@ -3,8 +3,6 @@ package scoring.special;
 import api.Type;
 import scoring.Scoring;
 
-import java.util.Map;
-
 /**
  * Calcule le score d'un carré.
  */
@@ -19,14 +17,9 @@ public class FourOfAKind extends Scoring {
      * @return la somme des quatre dés d'un carré
      */
     @Override
-    public int computeScore(int[] dice) {
-        Map<Integer, Long> counts = countByValue(dice);
-        for (Map.Entry<Integer, Long> e : counts.entrySet()) {
-            int value = e.getKey();
-            if (hasAtLeastFour(counts, value)) {
-                return value * 4;
-            }
-        }
-        return NO_POINTS;
+    public int computeScore(int[] dices) {
+        return numberOfAkindScore(dices,
+            valueAtLeast(4),
+            keyTimes(4));
     }
 }
