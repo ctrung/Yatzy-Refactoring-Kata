@@ -6,7 +6,7 @@ import scoring.Scoring;
 /**
  * Calcule le score d'une partie d'un.
  */
-public class One extends Scoring {
+public final class One extends Scoring {
 
     @Override
     public Type getType() {

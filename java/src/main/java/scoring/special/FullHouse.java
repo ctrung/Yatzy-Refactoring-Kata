@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 /**
  * Calcule le score d'un full house.
  */
-public class FullHouse extends Scoring {
+public final class FullHouse extends Scoring {
 
     @Override
     public Type getType() {

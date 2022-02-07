@@ -6,7 +6,7 @@ import scoring.Scoring;
 /**
  * Calcule le score d'une partie de quatre.
  */
-public class Four extends Scoring {
+public final class Four extends Scoring {
 
     @Override
     public Type getType() {

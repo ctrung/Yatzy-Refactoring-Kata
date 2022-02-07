@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Calcule le score d'une grande suite.
  */
-public class LargeStraight extends Scoring {
+public final class LargeStraight extends Scoring {
 
     private static final int POINTS = 20;
 

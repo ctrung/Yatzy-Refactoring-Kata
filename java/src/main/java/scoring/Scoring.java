@@ -1,6 +1,21 @@
 package scoring;
 
 import api.Type;
+import scoring.simple.Five;
+import scoring.simple.Four;
+import scoring.simple.One;
+import scoring.simple.Six;
+import scoring.simple.Three;
+import scoring.simple.Two;
+import scoring.special.Chance;
+import scoring.special.FourOfAKind;
+import scoring.special.FullHouse;
+import scoring.special.OnePair;
+import scoring.special.ThreeOfAKind;
+import scoring.special.TwoPairs;
+import scoring.special.Yatzy;
+import scoring.straight.LargeStraight;
+import scoring.straight.SmallStraight;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -13,7 +28,9 @@ import static java.util.stream.Collectors.groupingBy;
 /**
  * Parent de tous les scoring du jeu.
  */
-public abstract class Scoring {
+public abstract sealed class Scoring permits Chance, Five, Four, FourOfAKind,
+    FullHouse, LargeStraight, One, OnePair, Six, SmallStraight, Three,
+    ThreeOfAKind, Two, TwoPairs, Yatzy {
 
     /**
      * Valeur min d'un dé

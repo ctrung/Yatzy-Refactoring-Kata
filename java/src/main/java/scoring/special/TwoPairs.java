@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 /**
  * Calcule le score de deux paires.
  */
-public class TwoPairs extends Scoring {
+public final class TwoPairs extends Scoring {
 
     @Override
     public Type getType() {
