@@ -1,14 +1,13 @@
-package scoring.special;
+package scoring;
 
 import api.Type;
-import scoring.Scoring;
 
 import static java.util.Arrays.stream;
 
 /**
  * Calcule le score de Yatzy.
  */
-public class Yatzy extends Scoring {
+public final class Yatzy extends Scoring {
 
     private static final int POINTS = 50;
 

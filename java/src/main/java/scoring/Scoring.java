@@ -13,7 +13,9 @@ import static java.util.stream.Collectors.groupingBy;
 /**
  * Parent de tous les scoring du jeu.
  */
-public abstract class Scoring {
+public abstract sealed class Scoring permits Chance, Five, Four, FourOfAKind,
+    FullHouse, LargeStraight, One, OnePair, Six, SmallStraight, Three,
+    ThreeOfAKind, Two, TwoPairs, Yatzy {
 
     /**
      * Valeur min d'un dé

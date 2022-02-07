@@ -1,12 +1,11 @@
-package scoring.special;
+package scoring;
 
 import api.Type;
-import scoring.Scoring;
 
 /**
  * Calcule le score d'un brelan.
  */
-public class ThreeOfAKind extends Scoring {
+public final class ThreeOfAKind extends Scoring {
 
     @Override
     public Type getType() {

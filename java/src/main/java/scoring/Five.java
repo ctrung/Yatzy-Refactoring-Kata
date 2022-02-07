@@ -1,12 +1,11 @@
-package scoring.simple;
+package scoring;
 
 import api.Type;
-import scoring.Scoring;
 
 /**
  * Calcule le score d'une partie de cinq.
  */
-public class Five extends Scoring {
+public final class Five extends Scoring {
 
     @Override
     public Type getType() {

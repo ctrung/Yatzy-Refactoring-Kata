@@ -1,12 +1,11 @@
-package scoring.special;
+package scoring;
 
 import api.Type;
-import scoring.Scoring;
 
 /**
  * Calcule le score d'une paire.
  */
-public class OnePair extends Scoring {
+public final class OnePair extends Scoring {
 
     @Override
     public Type getType() {

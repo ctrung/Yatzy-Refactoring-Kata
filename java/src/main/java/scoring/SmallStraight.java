@@ -1,14 +1,13 @@
-package scoring.straight;
+package scoring;
 
 import api.Type;
-import scoring.Scoring;
 
 import java.util.Map;
 
 /**
  * Calcule le score d'une petite suite.
  */
-public class SmallStraight extends Scoring {
+public final class SmallStraight extends Scoring {
 
     private static final int POINTS = 15;
 

@@ -1,7 +1,6 @@
-package scoring.special;
+package scoring;
 
 import api.Type;
-import scoring.Scoring;
 
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,7 @@ import java.util.stream.Collectors;
 /**
  * Calcule le score d'un full house.
  */
-public class FullHouse extends Scoring {
+public final class FullHouse extends Scoring {
 
     @Override
     public Type getType() {

@@ -1,12 +1,11 @@
-package scoring.special;
+package scoring;
 
 import api.Type;
-import scoring.Scoring;
 
 /**
  * Calcule le score d'un carré.
  */
-public class FourOfAKind extends Scoring {
+public final class FourOfAKind extends Scoring {
 
     @Override
     public Type getType() {

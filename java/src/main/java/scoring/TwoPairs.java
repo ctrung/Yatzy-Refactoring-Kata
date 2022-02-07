@@ -1,7 +1,6 @@
-package scoring.special;
+package scoring;
 
 import api.Type;
-import scoring.Scoring;
 
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,7 @@ import java.util.stream.Collectors;
 /**
  * Calcule le score de deux paires.
  */
-public class TwoPairs extends Scoring {
+public final class TwoPairs extends Scoring {
 
     @Override
     public Type getType() {
